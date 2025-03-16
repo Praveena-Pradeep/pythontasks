@@ -1,3 +1,5 @@
+import array
+stack = array.array('i')
 stack=[]
 stack.append(15)
 stack.append(25)
