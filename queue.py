@@ -1,3 +1,5 @@
+import array
+queue = array.array('u') 
 queue=[]
 queue.append("Manu")
 queue.append("Radha")
