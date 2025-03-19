@@ -1,18 +1,24 @@
 import sys
 import re
+import os
 
 def extract_names(year_to_find):
     """
-    Extract names and ranks from baby*.html file corresponding to the given year.
+    Extract names and ranks from the baby*.html file corresponding to the given year.
     Returns a list starting with the year, followed by 'name rank' strings in alphabetical order.
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
     # List to store the result
     names = []
     
-    # Read the HTML file for the year
+    # Construct the filename for the given year
     filename = f'baby{year_to_find}.html'
     
+    # Check if the file exists
+    if not os.path.exists(filename):
+        print(f"Error: Could not find the file for the year {year_to_find}. Make sure the file {filename} exists.")
+        sys.exit(1)
+
     try:
         with open(filename, 'r', encoding='utf-8') as f:
             text = f.read()
@@ -52,18 +58,18 @@ def extract_names(year_to_find):
     return names
 
 def main():
+    # User-friendly messages
+    print("Welcome to the Baby Names Extractor!")
+    print("This program extracts baby names and their ranks from HTML files based on the year.")
+    print("Please ensure you have the 'baby{year}.html' files in the current directory.")
+
     # Ask for the year input
     year_to_find = input("Enter the year you want to search for (e.g., 1990): ").strip()
 
-    # Process command-line arguments
-    if len(sys.argv) < 2:
-        print('usage: [--summaryfile] file [file ...]')
+    # Validate the year input
+    if not year_to_find.isdigit() or len(year_to_find) != 4:
+        print("Error: Please enter a valid year (e.g., 1990).")
         sys.exit(1)
-
-    summary = False
-    if sys.argv[1] == '--summaryfile':
-        summary = True
-        del sys.argv[1]
 
     # Extract names and ranks for the input year
     names = extract_names(year_to_find)
@@ -71,12 +77,18 @@ def main():
     # Convert the result list into a string with each name on a new line
     text = '\n'.join(names)
 
-    if summary:
-        # Write the result to a summary file
-        with open(f'{year_to_find}.summary', 'w', encoding='utf-8') as outf:
+    # Ask the user if they want to save the result to a file
+    save_to_file = input("Do you want to save the results to a summary file? (y/n): ").strip().lower()
+
+    if save_to_file == 'y':
+        # Save the results to a summary file
+        summary_filename = f'{year_to_find}.summary'
+        with open(summary_filename, 'w', encoding='utf-8') as outf:
             outf.write(text + '\n')
+        print(f"The results have been saved to {summary_filename}")
     else:
-        # Print the result to the console
+        # Print the results to the console
+        print("Here are the results:")
         print(text)
 
 if __name__ == '__main__':
